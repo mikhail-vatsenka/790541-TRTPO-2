@@ -8,6 +8,7 @@
 #include <driver/uart.h>
 #include <driver/gpio.h>
 
+#include "log.h"
 #include "nmea.h"
 #include "adc.h"
 
@@ -112,7 +113,8 @@ void pump_init() {
 
 void app_main() {
 	exchange_t* exchangeData = initExchange();
-
+	
+	log_init();
 	uart_init();
 
 	pump_init(); // Инициализация GPIO для насоса
