@@ -13,6 +13,11 @@
 #define UART_RX GPIO_NUM_16
 #define UART_NUM UART_NUM_1
 
+#define PUMP_PIN GPIO_NUM_26
+
+#define TAG_OILER "oiler"
+#define TAG_HDS "hds"
+
 #define _sysName "oiler v2 rtos esp32"
 
 typedef struct { // Очереди сообщений и событие
