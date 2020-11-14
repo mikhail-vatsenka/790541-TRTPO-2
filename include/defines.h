@@ -15,9 +15,6 @@
 
 #define PUMP_PIN GPIO_NUM_26
 
-#define TAG_OILER "oiler"
-#define TAG_HDS "hds"
-
 #define _sysName "oiler v2 rtos esp32"
 
 typedef struct { // Очереди сообщений и событие

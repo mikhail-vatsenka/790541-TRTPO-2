@@ -28,17 +28,23 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
 	wifi_mode_t wMode;
 	esp_wifi_get_mode(&wMode);
 
+	ESP_LOGD(log_name(TAG_WIFI), " WiFi event %d", event->event_id);
+
 	switch (event->event_id) {
 	case SYSTEM_EVENT_AP_STACONNECTED:
+		ESP_LOGV(log_name(TAG_WIFI), "New AP client");
 		apStationsCount++;
 		break;
 	case SYSTEM_EVENT_AP_STADISCONNECTED:
 		apStationsCount--;
+		ESP_LOGI(log_name(TAG_WIFI), "Sta disconnect, rest %d", apStationsCount);
 		if(apStationsCount == 0 && wMode == WIFI_MODE_AP) {
 			xEventGroupSetBits(gExchangeData->mainEventGroup, WIFI_DISCONNECT_BIT);
 		}
 		break;
 	case SYSTEM_EVENT_AP_STAIPASSIGNED:
+		ESP_LOGI(log_name(TAG_WIFI), "Ap client got IP %s", ip4addr_ntoa(&event->event_info.ap_staipassigned.ip));
+		ESP_LOGI(log_name(TAG_WIFI), "Ap total clients: %d", apStationsCount);
 		xEventGroupSetBits(gExchangeData->mainEventGroup, WIFI_CONNECTED_BIT);
 		break;
 	default:
@@ -60,6 +66,7 @@ static void wifi_init(void) {
 	wifi_config_int_t *wifiConfigInt = config_wifi();
 	if (wifiConfigInt->mode != WIFI_MODE_AP && wifiConfigInt->mode != WIFI_MODE_APSTA)
 		wifiConfigInt->mode = WIFI_MODE_AP;
+	ESP_LOGI(log_name(TAG_WIFI), "Setting WiFi mode: %d ", wifiConfigInt->mode);
 
 	ESP_ERROR_CHECK( esp_wifi_set_mode(wifiConfigInt->mode) );
 
@@ -108,7 +115,8 @@ void pump_init() {
 	};
 
 	if(gpio_config(&io_conf) != ESP_OK)
-		ESP_LOGE(TAG_OILER, "Failed to set GPIO");
+	ESP_LOGE(log_name(TAG_OILER), "Failed to set GPIO");
+	
 }
 
 void app_main() {
