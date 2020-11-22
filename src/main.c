@@ -10,6 +10,7 @@
 
 #include "log.h"
 #include "nmea.h"
+#include "httpd.h"
 #include "adc.h"
 
 #include "defines.h"
@@ -137,6 +138,9 @@ void app_main() {
 	// 4кб стека для printf/scanf, приоритет 5
 	xTaskCreate(nmea_read_task, "gps_read", 4*1024, (void*)(exchangeData), 5, NULL);
 
+	// Задача http сервера
+	xTaskCreate(httpd_watch_task, "http_watch", 4*1024, (void*)(exchangeData), 7, NULL); 
+	
 	// Чтение значений датчика влажности
 	// Задача с низким приоритетом
 	xTaskCreate(hds_task, "hds_read_task", 4*1024, (void*)(exchangeData), 1, NULL); 
