@@ -12,9 +12,12 @@
 #include "nmea.h"
 #include "httpd.h"
 #include "adc.h"
+#include "odo.h"
 
 #include "defines.h"
 #include "cfg.h"
+
+#include "odo.h"
 
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
 	static uint8_t apStationsCount=0;
@@ -137,7 +140,11 @@ void app_main() {
 	// Чтение сообщений из UART
 	// 4кб стека для printf/scanf, приоритет 5
 	xTaskCreate(nmea_read_task, "gps_read", 4*1024, (void*)(exchangeData), 5, NULL);
+	xTaskCreate(odometer_task, "odometer_task", 4*1024, (void*)(exchangeData), 9, NULL); 
 
+	//одометр
+	xTaskCreate(odometer_task, "odometer_task", 4*1024, (void*)(exchangeData), 9, NULL); 
+	
 	// Задача http сервера
 	xTaskCreate(httpd_watch_task, "http_watch", 4*1024, (void*)(exchangeData), 7, NULL); 
 	
