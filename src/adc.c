@@ -1,6 +1,7 @@
 #include <driver/adc.h>
 #include <esp_log.h>
 
+#include "log.h"
 #include "defines.h"
 
 #define HDS_CHANNEL ADC1_CHANNEL_7
@@ -19,7 +20,7 @@ void hds_task(void *pvData) {
 		float vout=(float)val * 3.3 / 1024.0; // рассчет напряжения, опорное 3.3 с выхода DC-DC платы
 		float res = ((3.3-vout) < 0.05 ? 100.0 : 100.0 * vout / (3.3-vout) ); // рассчет сопротивления датчика
 
-		ESP_LOGI(TAG_HDS, "read: %d | %.2f kOM", val, res);
+		ESP_LOGI(log_name(TAG_HDS), "read: %d | %.2f kOM", val, res);
 
 		vTaskDelay( 3000 / portTICK_PERIOD_MS ); // пауза 3 секунды
 	}

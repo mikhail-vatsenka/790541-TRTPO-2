@@ -12,8 +12,7 @@
 
 #include "defines.h"
 #include "nmea.h"
-
-#define TAG_NMEA "nmea"
+#include "log.h"
 
 void nmea_read_task(void *pvData) {
 	exchange_t *exData = initExchange(); // Структура для обмена данными
@@ -30,7 +29,7 @@ void nmea_read_task(void *pvData) {
 
 					ts_update(&(exData->uartTS)); // обновили таймстамп данных от GPS приемника
                     uart_read_bytes(UART_NUM, buf, event.size, portMAX_DELAY); // прочитали данные
-					ESP_LOGV(TAG_NMEA, "%d: %s", event.size, buf); // Вывели строку в лог
+					ESP_LOGV(log_name(TAG_NMEA), "UART data len: %d: %s", event.size, buf); // Вывели строку в лог
 
 					for(uint16_t i=0; i<event.size; i++) {
 						// ToDo: отдать символ buf[i] gps-парсеру, проверить валидность возвращенной точки
@@ -40,12 +39,12 @@ void nmea_read_task(void *pvData) {
 					break;
 				case UART_FIFO_OVF: // События переполнения буфера
 				case UART_BUFFER_FULL:
-					ESP_LOGE(TAG_NMEA, "UART_BUFFER_FULL | UART_FIFO_OVF");
+					ESP_LOGE(log_name(TAG_NMEA), "UART_BUFFER_FULL | UART_FIFO_OVF");
                     uart_flush_input(UART_NUM); // сбросили буфер
                     xQueueReset(exData->uartQueue); // Сбросили очередь
 					break;
 				default: // все остальные события просто логировать
-					ESP_LOGD(TAG_NMEA, "UART event %d: ", event.type);
+					ESP_LOGD(log_name(TAG_NMEA), "UART event %d: ", event.type);
 					break;
 
 			}

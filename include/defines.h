@@ -15,9 +15,6 @@
 
 #define PUMP_PIN GPIO_NUM_26
 
-#define TAG_OILER "oiler"
-#define TAG_HDS "hds"
-
 #define _sysName "oiler v2 rtos esp32"
 
 typedef struct { // Очереди сообщений и событие
@@ -31,9 +28,19 @@ typedef struct { // Очереди сообщений и событие
 	int64_t nmeaTS; // Время последней валидной точки GPS
 } exchange_t;
 
+// структура данных одометра
+typedef struct {
+	float distance; // distance, km
+	float avgSpeed; // average speed between last two points, km
+} odometer_data;
+
 // Флаги для обмена событиями - подключение\отключение клиента
 #define WIFI_CONNECTED_BIT  BIT0
 #define WIFI_DISCONNECT_BIT BIT1
+
+// обновление данных одометра
+#define GPS_POINT_READY     BIT2
+#define ODO_UPDATED		    BIT3
 
 extern exchange_t* initExchange();
 extern void ts_update(int64_t *ts);
